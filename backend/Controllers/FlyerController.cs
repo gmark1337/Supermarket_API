@@ -38,10 +38,10 @@ namespace backend.Controllers
                 return BadRequest("No data received");
             }
 
-            NodeResponse nodeResponse;
+            Dictionary<string, FlyerImages> flyerMap;
             try
             {
-                nodeResponse = JsonSerializer.Deserialize<NodeResponse>(content, new JsonSerializerOptions
+                flyerMap = JsonSerializer.Deserialize<Dictionary<string, FlyerImages>>(content, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
@@ -50,19 +50,25 @@ namespace backend.Controllers
             {
                 return BadRequest($"Invalid JSON format: {e.Message} ");
             }
-            _logger.LogInformation($"Node response: {nodeResponse.data}");
+            //_logger.LogInformation($"Node response: {nodeResponse.data}");
 
-            if (nodeResponse == null || nodeResponse.data == null)
+            if (flyerMap == null || flyerMap.Count == 0)
             {
                 return BadRequest("Failed to parse data");
             }
             
-            List<Flyer> pages = nodeResponse.data.Pages;
-            foreach(var flyer in pages) 
+            List<Flyer> allFlyers = new List<Flyer>();
+            foreach(var flyers in flyerMap) 
             {
-                flyer.SupermarketID = supermarketId;
+                var flyerImages = flyers.Value;
+
+                foreach(var flyer in flyerImages.Pages)
+                {
+                    flyer.SupermarketID = supermarketId;
+                    allFlyers.Add(flyer);
+                }
             }
-            _flyerService.SetAll(pages);
+            _flyerService.SetAll(allFlyers);
 
             return Ok("Data refreshed");
         }

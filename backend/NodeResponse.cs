@@ -4,7 +4,6 @@ namespace backend
 {
     public class NodeResponse
     {
-        [JsonPropertyName("lidlImages")]
-        public FlyerImages data { get; set; }
+        public Dictionary<string, FlyerImages> data { get; set; }
     }
 }
