@@ -1,4 +1,5 @@
 using backend;
+using backend.Data;
 using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +15,11 @@ builder.Services.AddSerilog(
     .WriteTo.Console());
 
 builder.Services.AddSingleton<IFlyerService, FlyerService>();
-builder.Services.AddSingleton<ISupermarketService, SupermarketService>();
+builder.Services.AddSingleton<MongoDbService>();
+builder.Services.AddSingleton<ExternalFlyerService>();
 
-builder.Services.AddHttpClient();
+
+builder.Services.AddHttpClient<ExternalFlyerService>();
 
 var app = builder.Build();
 
