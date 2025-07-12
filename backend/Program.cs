@@ -14,7 +14,16 @@ builder.Services.AddSerilog(
     .MinimumLevel.Information()
     .WriteTo.Console());
 
-builder.Services.AddSingleton<IFlyerService, FlyerService>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("_myAllowSpecificOrigins", policy =>
+    {
+        policy.WithOrigins("https://localhost:5002", "https://localhost:3000")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<ExternalFlyerService>();
 
@@ -34,7 +43,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-
+app.UseCors("_myAllowSpecificOrigins");
 
 app.MapControllers();
 

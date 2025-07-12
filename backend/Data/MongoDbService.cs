@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Diagnostics;
 
 namespace backend.Data
 {
@@ -39,11 +40,27 @@ namespace backend.Data
             return await _collection.Find(filter).ToListAsync();
         }
 
-        public async Task<bool> FlyersExistAsync(string actualDate)
+        public async Task<bool> FlyersExistAsync(string actualDate, string supermarketId)
         {
-            var filter = Builders<Flyer>.Filter.Eq("ActualDate", actualDate);
-                         
+            var builder = Builders<Flyer>.Filter;
+            var filter = builder.Eq(f => f.ActualDate, actualDate) & 
+                        builder.Eq(f => f.SupermarketID, supermarketId);
+
+            _logger.LogDebug("The filter values are ActualDate: {AcutalDate}, supermarketId: {supermarketId}", actualDate, supermarketId);
+
+
             return await _collection.Find(filter).AnyAsync();
+        }
+        public async Task<List<Flyer>> GetPageAsnyc(int pageIndex, string supermarketID)
+        {
+            var builder = Builders<Flyer>.Filter;
+
+            var pagefilter = builder.And(
+                Builders<Flyer>.Filter.Eq("SupermarketId", supermarketID),
+                Builders<Flyer>.Filter.Eq("pageIndex", pageIndex));
+            _logger.LogInformation(pagefilter.ToString());
+
+            return await _collection.Find(pagefilter).ToListAsync();
         }
     }
 }

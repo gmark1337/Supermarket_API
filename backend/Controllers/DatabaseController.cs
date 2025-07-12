@@ -28,7 +28,7 @@ namespace backend.Controllers
             }
             //Validation
             var actualDate = flyers.FirstOrDefault().ActualDate;
-            if (await _dbService.FlyersExistAsync(actualDate))
+            if (await _dbService.FlyersExistAsync(actualDate, supermarketId))
             {
                 return Conflict("Flyers for this supermarket and date already exist ");
             }
@@ -38,10 +38,27 @@ namespace backend.Controllers
             return Ok("Flyers imported and save to MongoDb");
         }
 
-        [HttpGet("{supermarketId}")]
+        [HttpGet("supermarketId")]
         public async Task<IActionResult> GetFlyers(string supermarketId)
         {
             var flyers = await _dbService.GetFlyersAsync(supermarketId);
+            if (flyers == null)
+            {
+                return BadRequest();
+            }
+            return Ok(flyers);
+        }
+
+
+        [HttpGet("pageIndex")]
+        public async Task<IActionResult> GetPages(int pageIndex, string supermarketID)
+        {
+            var flyers = await _dbService.GetPageAsnyc(pageIndex, supermarketID);
+            if (flyers == null)
+            {
+                return NotFound();
+            }
+
             return Ok(flyers);
         }
 
