@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Diagnostics;
@@ -55,10 +56,13 @@ namespace backend.Data
         {
             var builder = Builders<Flyer>.Filter;
 
+            
             var pagefilter = builder.And(
                 Builders<Flyer>.Filter.Eq("SupermarketId", supermarketID),
                 Builders<Flyer>.Filter.Eq("pageIndex", pageIndex));
             _logger.LogInformation(pagefilter.ToString());
+
+            _logger.LogInformation($"The filter contents are: {pagefilter}");
 
             return await _collection.Find(pagefilter).ToListAsync();
         }
