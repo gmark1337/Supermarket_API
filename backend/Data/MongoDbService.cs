@@ -9,6 +9,7 @@ namespace backend.Data
     public class MongoDbService
     {
         private readonly IMongoCollection<Flyer> _collection;
+        private readonly IMongoCollection<FlyerPDF> _pdfCollection;
         private readonly ILogger<MongoDbService> _logger;
 
 
@@ -18,8 +19,12 @@ namespace backend.Data
             var client = new MongoClient(configuration["MongoDbSettings:ConnectionString"]);
             //Create the database
             var database = client.GetDatabase("FlyerDB");
+            var pdfdatabase = client.GetDatabase("FlyerPdfDb");
+
             //Get the collection from the database
             _collection = database.GetCollection<Flyer>("Flyers");
+            _pdfCollection = pdfdatabase.GetCollection<FlyerPDF>("FlyerPdfs");
+
             _logger = logger;
         }
 
@@ -34,9 +39,40 @@ namespace backend.Data
             await _collection.InsertManyAsync(flyers);
         }
 
+        //PDF
+        public async Task SaveFlyerPdfAsync(FlyerPDF flyerObject, string supermarketId)
+        {
+            flyerObject.SupermarketId = supermarketId;
+
+            await _pdfCollection.InsertOneAsync(flyerObject);
+        }
+        public async Task<FlyerPDF> GetFlyerPdfbyActualDateASync(string acutalDate)
+        {
+            var filter = Builders<FlyerPDF>.Filter.Eq("ActualDate", acutalDate);
+
+            _logger.LogInformation($"The filter's data are: {filter}");
+
+            return await _pdfCollection.Find(filter).FirstOrDefaultAsync();
+        }
+        
+
         public async Task<List<Flyer>> GetFlyersAsync(string supermarketId)
         {
             var filter = Builders<Flyer>.Filter.Eq("SupermarketId", supermarketId);
+
+            return await _collection.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<FlyerPDF>> GetFlyerPdfAsync(string supermarketId)
+        {
+            var filter = Builders<FlyerPDF>.Filter.Eq("SupermarketId", supermarketId);
+
+            return await _pdfCollection.Find(filter).ToListAsync();
+        }
+
+        public async Task<List<Flyer>> GetFlyersByActualDateAsync(string acutalDate)
+        {
+            var filter = Builders<Flyer>.Filter.Eq("ActualDate", acutalDate);
 
             return await _collection.Find(filter).ToListAsync();
         }
@@ -65,6 +101,17 @@ namespace backend.Data
             _logger.LogInformation($"The filter contents are: {pagefilter}");
 
             return await _collection.Find(pagefilter).ToListAsync();
+        }
+
+        public async Task<bool> FlyerPdfExistAsync(string supermarketId, string actualDate)
+        {
+            var builder = Builders<FlyerPDF>.Filter;
+
+            var pagefilter = builder.And(
+                builder.Eq("SupermarketId", supermarketId),
+                builder.Eq("ActualDate", actualDate)
+                );
+            return await _pdfCollection.Find(pagefilter).AnyAsync();
         }
     }
 }

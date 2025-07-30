@@ -39,7 +39,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("supermarketId")]
-        public async Task<IActionResult> GetFlyers(string supermarketId)
+        public async Task<IActionResult> GetFlyers([FromQuery] string supermarketId)
         {
             var flyers = await _dbService.GetFlyersAsync(supermarketId);
             if (flyers == null)
@@ -61,7 +61,16 @@ namespace backend.Controllers
 
             return Ok(flyers);
         }
-
+        [HttpGet("ActualDate")]
+        public async Task<IActionResult> GetWeeklyFlyerPages([FromQuery] string actualDate)
+        {
+            var flyers = await _dbService.GetFlyersByActualDateAsync(actualDate);
+            if(flyers == null)
+            {
+                return BadRequest();
+            }
+            return Ok(flyers);
+        }
         
     }
 }

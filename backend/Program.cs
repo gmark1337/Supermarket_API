@@ -1,6 +1,7 @@
 using backend;
 using backend.Data;
 using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -14,6 +15,7 @@ builder.Services.AddSerilog(
     .MinimumLevel.Information()
     .WriteTo.Console());
 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("_myAllowSpecificOrigins", policy =>
@@ -26,9 +28,10 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<ExternalFlyerService>();
-
+builder.Services.AddSingleton<ExternalPdfService>();
 
 builder.Services.AddHttpClient<ExternalFlyerService>();
+builder.Services.AddHttpClient<ExternalPdfService>();
 
 var app = builder.Build();
 
