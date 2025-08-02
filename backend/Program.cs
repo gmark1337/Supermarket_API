@@ -16,11 +16,12 @@ builder.Services.AddSerilog(
     .WriteTo.Console());
 
 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("_myAllowSpecificOrigins", policy =>
     {
-        policy.WithOrigins("https://localhost:5002", "https://localhost:3000")
+        policy.WithOrigins(builder.Configuration["ConnectionStrings:Frontend"], builder.Configuration["ConnectionStrings:NodeJs_API"])
         .AllowAnyHeader()
         .AllowAnyMethod();
     });

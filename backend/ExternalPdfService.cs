@@ -7,17 +7,22 @@ namespace backend
     {
         private readonly HttpClient _httpClient;
         private readonly ILogger<ExternalPdfService> _logger;
+        private readonly IConfiguration _config;
 
-        public ExternalPdfService(HttpClient httpClient, ILogger<ExternalPdfService> logger)
+        public ExternalPdfService(HttpClient httpClient, ILogger<ExternalPdfService> logger , IConfiguration config)
         {
             _httpClient = httpClient;
             _logger = logger;
+            _config = config;
         }
         public async Task<FlyerPDF> FetchPdfFromNodeApi(string supermarketId)
         {
             try
             {
-                var response = await _httpClient.GetAsync($"http://localhost:3000/api/pdf?supermarketId={supermarketId}");
+                var baseURL = _config["ConnectionStrings:NodeJs_API"];
+                var endpoint = _config["API_endpoints:getPDFURL"];
+                var fullURL = $"{baseURL}{endpoint}?supermarketId={supermarketId}";
+                var response = await _httpClient.GetAsync(fullURL);
                 if (!response.IsSuccessStatusCode)
                 {
                     return null;
