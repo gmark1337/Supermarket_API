@@ -17,13 +17,17 @@ namespace backend.Data
         {
             //Configuration -> Database connection settings in {'./appsettings.json'}
             var client = new MongoClient(configuration["MongoDbSettings:ConnectionString"]);
+
+            var flyerCollectionName = configuration["MongoDbSettings:FlyerCollection"];
+            var flyerPDFCollectionName = configuration["MongoDbSettings:FlyerPDFCollection"];
+            var databaseName = configuration["MongoDbSettings:Database"];
+
             //Create the database
-            var database = client.GetDatabase("FlyerDB");
-            var pdfdatabase = client.GetDatabase("FlyerPdfDb");
+            var database = client.GetDatabase(databaseName); 
 
             //Get the collection from the database
-            _collection = database.GetCollection<Flyer>("Flyers");
-            _pdfCollection = pdfdatabase.GetCollection<FlyerPDF>("FlyerPdfs");
+            _collection = database.GetCollection<Flyer>(flyerCollectionName);
+            _pdfCollection = database.GetCollection<FlyerPDF>(flyerPDFCollectionName);
 
             _logger = logger;
         }
