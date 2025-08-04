@@ -25,6 +25,13 @@ builder.Services.AddCors(options =>
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
+
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("https://thankful-rock-027ccfc03.2.azurestaticapps.net")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
 });
 
 builder.Services.AddSingleton<MongoDbService>();
@@ -49,6 +56,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors("_myAllowSpecificOrigins");
+app.UseCors("AllowFrontend");
 
 app.MapControllers();
 
