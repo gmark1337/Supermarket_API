@@ -55,9 +55,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 
-app.UseCors("_myAllowSpecificOrigins");
+//app.UseCors("_myAllowSpecificOrigins");
 app.UseCors("AllowFrontend");
 
 app.MapControllers();
+
+app.MapGet("/", () => "Backend is running!");
 
 app.Run();
