@@ -23,8 +23,9 @@ namespace backend
             
             try {
                 var baseurl = _config["ConnectionStrings:NodeJs_API"];
-                var endpoint = _config["API_endpoints:getImageURL"];
+                var endpoint = _config["API_endpoints:getImageURL"]; 
                 var fullURL = $"{baseurl}{endpoint}?supermarketId={supermarketId}";
+                _logger.LogInformation(fullURL);
                 //_logger.LogInformation($"The request is {fullURL}");
                 //_logger.LogInformation($"The other request is http://localhost:3000/api/data?supermarketId={supermarketId}");
                 var response = await _httpClient.GetAsync(fullURL);

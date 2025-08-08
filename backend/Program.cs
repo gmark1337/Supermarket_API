@@ -19,16 +19,16 @@ builder.Services.AddSerilog(
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("_myAllowSpecificOrigins", policy =>
+    options.AddPolicy("localTesting", policy =>
     {
         policy.WithOrigins(builder.Configuration["ConnectionStrings:Frontend"], builder.Configuration["ConnectionStrings:NodeJs_API"])
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
 
-    options.AddPolicy("AllowFrontend", policy =>
+    options.AddPolicy("Deplyoment", policy =>
     {
-        policy.WithOrigins("https://thankful-rock-027ccfc03.2.azurestaticapps.net")
+        policy.WithOrigins("https://thankful-rock-027ccfc03.2.azurestaticapps.net", "https://postwall-nodejs-service.azurewebsites.net")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
@@ -56,7 +56,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 //app.UseCors("_myAllowSpecificOrigins");
-app.UseCors("AllowFrontend");
+app.UseCors("Deplyoment");
 
 app.MapControllers();
 
