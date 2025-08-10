@@ -8,6 +8,9 @@ namespace backend
         //Lidl == 1
         //Spar == 2
         //Penny == 3 
-        public Dictionary<string, FlyerImages> data { get; set; }
+        //public Dictionary<string, FlyerImages> data { get; set; }
+
+        [JsonPropertyName("images")]
+        public FlyerImages data { get; set; }
     }
 }

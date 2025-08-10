@@ -16,6 +16,9 @@ namespace backend
         [BsonElement("SupermarketId"), BsonRepresentation(MongoDB.Bson.BsonType.String)]
         public string SupermarketID { get; set; }
 
+        [BsonElement("ServiceType"), BsonRepresentation(MongoDB.Bson.BsonType.String)]
+        public string ServiceType { get; set; }
+
         [JsonPropertyName("pageIndex")]
         [BsonElement("pageIndex"), BsonRepresentation(MongoDB.Bson.BsonType.Int32)]
         public int PageIndex { get; set;  }

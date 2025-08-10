@@ -27,15 +27,16 @@ namespace backend.Controllers
                 return BadRequest("No flyers received");
             }
             //Validation
-            var actualDate = flyers.FirstOrDefault().ActualDate;
-            if (await _dbService.FlyersExistAsync(actualDate, supermarketId))
-            {
-                return Conflict("Flyers for this supermarket and date already exist ");
-            }
+            //var actualDate = flyers.FirstOrDefault().ActualDate;
+            //if (await _dbService.FlyersExistAsync(actualDate, supermarketId))
+            //{
+            //    return Conflict("Flyers for this supermarket and date already exist ");
+            //}
 
-            await _dbService.SaveFlyersAsync(flyers, supermarketId);
+            //await _dbService.SaveFlyersAsync(flyers, supermarketId);
 
-            return Ok("Flyers imported and save to MongoDb");
+            //return Ok("Flyers imported and save to MongoDb");
+            return Ok(flyers);
         }
 
         [HttpGet("supermarketId")]

@@ -30,28 +30,34 @@ namespace backend
                 //_logger.LogInformation($"The other request is http://localhost:3000/api/data?supermarketId={supermarketId}");
                 var response = await _httpClient.GetAsync(fullURL);
                 //var response2 = await _httpClient.GetAsync($"http://localhost:3000/api/data?supermarketId={supermarketId}");
+                _logger.LogInformation($"The body is {response.Content.ToString()}");
                 if (!response.IsSuccessStatusCode)
                 {
                     return null;
                 }
 
                 var content = await response.Content.ReadAsStringAsync();
-                var flyerMap = JsonSerializer.Deserialize<Dictionary<string, FlyerImages>>(content);
+                //_logger.LogInformation($"Received content is {content}");
+                var flyerMap = JsonSerializer.Deserialize<NodeResponse>(content);
+                //_logger.LogInformation("Received information is: {@flyerMap}", flyerMap);
+                
 
-                if (flyerMap == null || flyerMap.Count == 0)
+                if (flyerMap == null)
                 {
                     return null;
                 }
+                var flyer = flyerMap.data;
+                //_logger.LogInformation("Flyer data is : {@flyer}", flyer);
+                //var date = flyerMap.data.ActualDate;
                 var Allflyers = new List<Flyer>();
-                foreach (var flyers in flyerMap)
+                foreach (var flyers in flyer.Pages)
                 {
-                    foreach (var flyer in flyers.Value.Pages)
-                    {
-                        flyer.SupermarketID = supermarketId;
-                        flyer.ActualDate = flyers.Value.ActualDate;
-                        Allflyers.Add(flyer);
-                    }
+                        flyers.SupermarketID = supermarketId;
+                        flyers.ActualDate = flyer.ActualDate;
+                        flyers.ServiceType = flyer.serviceType;
+                        Allflyers.Add(flyers);
                 }
+                
                 return Allflyers;
             }catch(Exception ex)
             {

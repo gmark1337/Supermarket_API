@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
 
     options.AddPolicy("Deplyoment", policy =>
     {
-        policy.WithOrigins("https://thankful-rock-027ccfc03.2.azurestaticapps.net", "https://postwall-nodejs-service.azurewebsites.net")
+        policy.WithOrigins("https://thankful-rock-027ccfc03.2.azurestaticapps.net")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });
@@ -50,13 +50,17 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("localTesting");
+}
+else{
+    app.UseCors("localTesting");
 }
 
-app.UseHttpsRedirection();
+    app.UseHttpsRedirection();
 app.UseRouting();
 
 //app.UseCors("_myAllowSpecificOrigins");
-app.UseCors("Deplyoment");
+//app.UseCors("localTesting");
 
 app.MapControllers();
 
