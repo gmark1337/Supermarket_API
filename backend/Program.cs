@@ -1,3 +1,5 @@
+using Amazon.Runtime;
+using Amazon.S3;
 using backend;
 using backend.Data;
 using Serilog;
@@ -37,9 +39,28 @@ builder.Services.AddCors(options =>
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<ExternalFlyerService>();
 builder.Services.AddSingleton<ExternalPdfService>();
+builder.Services.AddSingleton<BlobService>();
 
 builder.Services.AddHttpClient<ExternalFlyerService>();
 builder.Services.AddHttpClient<ExternalPdfService>();
+
+
+var r2settings = builder.Configuration.GetSection("CloudFlareConnectionStrings");
+string accountId = r2settings["AccountID"];
+string accessKey = r2settings["AccessKeyID"];
+string secretKey = r2settings["SecretAccessKeyID"];
+
+var awsCred = new BasicAWSCredentials(accessKey, secretKey);
+
+var s3Config = new AmazonS3Config
+{
+    ServiceURL = $"https://{accountId}.r2.cloudflarestorage.com",
+    ForcePathStyle = true,
+    SignatureVersion = "4",
+    AuthenticationRegion = "auto"
+};
+
+builder.Services.AddSingleton<IAmazonS3>(new AmazonS3Client(awsCred, s3Config));
 
 var app = builder.Build();
 
@@ -56,7 +77,7 @@ else{
     app.UseCors("localTesting");
 }
 
-    app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 app.UseRouting();
 
 //app.UseCors("_myAllowSpecificOrigins");

@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
+using ZstdSharp.Unsafe;
 
 namespace backend.Controllers
 {
@@ -11,11 +14,13 @@ namespace backend.Controllers
     {
         private readonly ExternalFlyerService _flyerService;
         private readonly MongoDbService _dbService;
+        private readonly BlobService _blobService;
 
-        public DatabaseController(ExternalFlyerService flyerService, MongoDbService mongoDbService)
+        public DatabaseController(ExternalFlyerService flyerService, MongoDbService mongoDbService, BlobService blobService)
         {
             _flyerService = flyerService;
             _dbService = mongoDbService;
+            _blobService = blobService;
         }
 
         [HttpPost("import")]
@@ -26,17 +31,51 @@ namespace backend.Controllers
             {
                 return BadRequest("No flyers received");
             }
-            //Validation
-            //var actualDate = flyers.FirstOrDefault().ActualDate;
-            //if (await _dbService.FlyersExistAsync(actualDate, supermarketId))
-            //{
-            //    return Conflict("Flyers for this supermarket and date already exist ");
-            //}
+            var serviceType = flyers.FirstOrDefault().ServiceType;
+            var actualDate = flyers.FirstOrDefault().ActualDate;
+            if (serviceType == "saveToDb") {
+                if(await _dbService.FlyersExistAsync(actualDate, supermarketId))
+                {
+                    return Conflict("Flyers for this supermarket and date already exist ");
+                }
+                await _dbService.SaveFlyersAsync(flyers, supermarketId);
+            }
+            else if(serviceType == "saveToCloudFlare")
+            {
+                if(await _dbService.FlyersExistAsync(actualDate, supermarketId))
+                {
+                    return Conflict("Flyers for this supermarket already exist in the cloud!");
+                }
+                await _blobService.UploadBlobIntoCloud(flyers);
+               
+                List<string> cloudURLs = await _blobService.FetchCloudFlareURLAsync(supermarketId, actualDate);
+                foreach(var url in cloudURLs)
+                {
+                    var filterPageIndex = Regex.Match(url, @"/(\d+)\.jpg");
+                    if (filterPageIndex.Success)
+                    {
+                        var pageIndex = filterPageIndex.Groups[1].Value;
+                        if(int.Parse(pageIndex) == flyers.FirstOrDefault().PageIndex)
+                        {
+                            flyers.FirstOrDefault().ImageURL = url;
+                        }
+                    }
+                }
+                await _dbService.SaveFlyersAsync(flyers, supermarketId);
+                
+                return Ok("Flyers imported and save to CloudFlare");
+            }
 
-            //await _dbService.SaveFlyersAsync(flyers, supermarketId);
+                //Validation
+                //var actualDate = flyers.FirstOrDefault().ActualDate;
+                //if (await _dbService.FlyersExistAsync(actualDate, supermarketId))
+                //{
+                //    return Conflict("Flyers for this supermarket and date already exist ");
+                //}
 
-            //return Ok("Flyers imported and save to MongoDb");
-            return Ok(flyers);
+                //await _dbService.SaveFlyersAsync(flyers, supermarketId);
+
+                return Ok("Flyers imported and saved to MongoDb");
         }
 
         [HttpGet("supermarketId")]
