@@ -28,7 +28,7 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod();
     });
 
-    options.AddPolicy("Deplyoment", policy =>
+    options.AddPolicy("Deployment", policy =>
     {
         policy.WithOrigins("https://thankful-rock-027ccfc03.2.azurestaticapps.net")
         .AllowAnyHeader()
@@ -71,9 +71,6 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    app.UseCors("localTesting");
-}
-else{
     app.UseCors("localTesting");
 }
 

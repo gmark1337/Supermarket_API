@@ -51,7 +51,7 @@ namespace backend.Controllers
                 List<string> cloudURLs = await _blobService.FetchCloudFlareURLAsync(supermarketId, actualDate);
                 foreach(var url in cloudURLs)
                 {
-                    var filterPageIndex = Regex.Match(url, @"/(\d+)\.jpg");
+                    var filterPageIndex = Regex.Match(url, @"/(\d+)\.jpe?g");
                     if (filterPageIndex.Success)
                     {
                         var pageIndex = filterPageIndex.Groups[1].Value;
