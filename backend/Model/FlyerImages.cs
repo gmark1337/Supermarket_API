@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace backend
+namespace backend.Model
 {
     public class FlyerImages
     {

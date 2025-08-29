@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace backend
+namespace backend.Model
 {
     //Bson  works the same way as JsonProperty
     //Has to assign which parameter what is because it will drop a cast! error

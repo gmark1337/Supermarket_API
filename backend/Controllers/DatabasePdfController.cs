@@ -37,7 +37,7 @@ namespace backend.Controllers
         }
 
         [HttpGet("supermarketId")]
-        public async Task<IActionResult> GetPdfFlyers([FromQuery]string supermarketId)
+        public async Task<ActionResult> GetPdfFlyers([FromQuery]string supermarketId)
         {
             var flyers = await _pdfCollectionService.GetFlyerPdfAsync(supermarketId);
             if(flyers == null)
@@ -50,7 +50,7 @@ namespace backend.Controllers
 
 
         [HttpGet("ActualDate")]
-        public async Task<IActionResult> GetPdfFlyersByActualDate([FromQuery]string actualDate)
+        public async Task<ActionResult> GetPdfFlyersByActualDate([FromQuery]string actualDate)
         {
             var flyers = await _pdfCollectionService.GetFlyerPdfbyActualDateASync(actualDate);
             if (flyers == null)

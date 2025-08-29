@@ -91,7 +91,7 @@ namespace backend.Controllers
 
 
         [HttpGet("pageIndex")]
-        public async Task<IActionResult> GetPages(int pageIndex, string supermarketID)
+        public async Task<ActionResult> GetPages(int pageIndex, string supermarketID)
         {
             var flyers = await _dbService.GetPageAsnyc(pageIndex, supermarketID);
             if (flyers == null)
@@ -102,7 +102,7 @@ namespace backend.Controllers
             return Ok(flyers);
         }
         [HttpGet("ActualDate")]
-        public async Task<IActionResult> GetWeeklyFlyerPages([FromQuery] string actualDate)
+        public async Task<ActionResult> GetWeeklyFlyerPages([FromQuery] string actualDate)
         {
             var flyers = await _dbService.GetFlyersByActualDateAsync(actualDate);
             if(flyers == null)

@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using backend.Model;
+using MongoDB.Bson;
 using System.Text.Json;
 
 namespace backend

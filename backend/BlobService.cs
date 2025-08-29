@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using Amazon.S3.Transfer;
+using backend.Model;
 using MongoDB.Driver;
 using System.Text.Json;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using backend.Model;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -10,6 +11,7 @@ namespace backend.Data
     {
         private readonly IMongoCollection<Flyer> _collection;
         private readonly IMongoCollection<FlyerPDF> _pdfCollection;
+        private readonly IMongoCollection<Feedback> _feedbackCollection;
         private readonly ILogger<MongoDbService> _logger;
 
 
@@ -20,6 +22,7 @@ namespace backend.Data
 
             var flyerCollectionName = configuration["MongoDbSettings:FlyerCollection"];
             var flyerPDFCollectionName = configuration["MongoDbSettings:FlyerPDFCollection"];
+            var feedbackCollectionName = configuration["MongoDbSettings:FeedbackCollection"];
             var databaseName = configuration["MongoDbSettings:Database"];
 
             //Create the database
@@ -28,6 +31,7 @@ namespace backend.Data
             //Get the collection from the database
             _collection = database.GetCollection<Flyer>(flyerCollectionName);
             _pdfCollection = database.GetCollection<FlyerPDF>(flyerPDFCollectionName);
+            _feedbackCollection = database.GetCollection<Feedback>(feedbackCollectionName);
 
             _logger = logger;
         }
@@ -116,6 +120,21 @@ namespace backend.Data
                 builder.Eq("ActualDate", actualDate)
                 );
             return await _pdfCollection.Find(pagefilter).AnyAsync();
+        }
+
+
+        public async Task SaveFeedbackAsync(Feedback feedback)
+        {
+            _logger.LogInformation($"Inserting... \n  {feedback.FeedbackId}");
+            await _feedbackCollection.InsertOneAsync(feedback);
+        }
+
+        public async Task<Feedback> GetFeedbackAsync(string id)
+        {
+            var filter = Builders<Feedback>.Filter.Eq("FeedbackId", id);
+
+
+            return await _feedbackCollection.Find(filter).FirstOrDefaultAsync();
         }
     }
 }

@@ -1,6 +1,7 @@
 using Amazon.Runtime;
 using Amazon.S3;
 using backend;
+using backend.Controllers;
 using backend.Data;
 using Serilog;
 
@@ -40,6 +41,7 @@ builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddSingleton<ExternalFlyerService>();
 builder.Services.AddSingleton<ExternalPdfService>();
 builder.Services.AddSingleton<BlobService>();
+builder.Services.AddSingleton<FeedbackController>();
 
 builder.Services.AddHttpClient<ExternalFlyerService>();
 builder.Services.AddHttpClient<ExternalPdfService>();
